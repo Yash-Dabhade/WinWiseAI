@@ -45,13 +45,9 @@ export const generateProposal = async ({
   budget,
   timeline,
 }) => {
-  const API_KEY =
-    import.meta.env.VITE_IBM_API_KEY ||
-    "YiFVqB312ECddzD_rIR89QWi_XnByeJgZJaGh1p9Z_2q";
+  const API_KEY = import.meta.env.VITE_IBM_API_KEY;
   const url = "/api/ml/ml/v1/text/generation?version=2023-05-29"; // Proxied path
-  const projectId =
-    import.meta.env.VITE_IBM_PROJECT_ID ||
-    "43ab8ac7-bed3-4b3f-a86e-ea4fbdf4c6b6";
+  const projectId = import.meta.env.VITE_IBM_PROJECT_ID;
 
   if (!API_KEY || !projectId) {
     throw new Error("Missing API_KEY or projectId in environment variables");
