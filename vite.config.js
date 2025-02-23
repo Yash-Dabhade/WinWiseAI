@@ -8,14 +8,14 @@ export default defineConfig({
       "/api/iam": {
         target: "https://iam.cloud.ibm.com",
         changeOrigin: true,
-        secure: false, // Allow self-signed certificates (for dev only)
+        secure: true, // Allow self-signed certificates (for dev only)
         rewrite: (path) => path.replace(/^\/api\/iam/, ""),
         logLevel: "debug", // Add this to see proxy logs
       },
       "/api/ml": {
         target: "https://us-south.ml.cloud.ibm.com",
         changeOrigin: true,
-        secure: false,
+        secure: true,
         rewrite: (path) => path.replace(/^\/api\/ml/, ""),
         logLevel: "debug",
       },
