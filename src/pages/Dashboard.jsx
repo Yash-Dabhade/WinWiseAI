@@ -21,14 +21,14 @@ export default function Dashboard() {
       icon: FileText,
     },
     {
-      path: "/dashboard/predict",
-      name: "Predict",
-      icon: TrendingUp,
-    },
-    {
       path: "/dashboard/analyze",
       name: "Analyze",
       icon: BarChart2,
+    },
+    {
+      path: "/dashboard/predict",
+      name: "Predict",
+      icon: TrendingUp,
     },
     {
       path: "/dashboard/library",

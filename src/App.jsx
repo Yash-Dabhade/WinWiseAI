@@ -9,8 +9,8 @@ import {
 import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import ProposalGenerator from "./pages/ProposalGenerator";
-import Analyze from "./pages/Predict";
-import Predict from "./pages/Analyze";
+import Analyze from "./pages/Analyze";
+import Predict from "./pages/Predict";
 import Library from "./pages/Library";
 
 const App = () => (
@@ -20,9 +20,9 @@ const App = () => (
       <Route path="/dashboard/*" element={<Dashboard />}>
         <Route index element={<Navigate to="generate" replace />} />
         <Route path="generate" element={<ProposalGenerator />} />
+        <Route path="library" element={<Library />} />
         <Route path="analyze" element={<Analyze />} />
         <Route path="predict" element={<Predict />} />
-        <Route path="library" element={<Library />} />
       </Route>
     </Routes>
   </Router>

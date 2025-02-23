@@ -227,3 +227,147 @@ export const analyzeOutcome = async (newProposal) => {
     throw error;
   }
 };
+
+// Knowledge base
+const knowledgeBase = {
+  executiveSummary: [
+    "Executive summaries must include clear ROI metrics and quantifiable business impact",
+    "Value proposition should highlight unique differentiators and competitive advantages",
+    "Summary should address key stakeholder concerns and business objectives",
+  ],
+  technical: [
+    "Technical specifications must include detailed system architecture and integration points",
+    "Performance metrics and SLAs should be clearly defined with measurement criteria",
+    "Security and compliance requirements must be explicitly addressed",
+  ],
+  timeline: [
+    "Project timeline should include risk buffers and contingency planning",
+    "Dependencies between phases must be clearly mapped with critical path identified",
+    "Resource allocation should be specified for each project phase",
+  ],
+  budget: [
+    "Budget breakdown should include both direct and indirect costs",
+    "ROI calculations must consider both quantitative and qualitative benefits",
+    "Payment milestones should align with deliverable completion",
+  ],
+  riskMitigation: [
+    "Risk assessment should cover technical, operational, and business risks",
+    "Mitigation strategies must include preventive and reactive measures",
+    "Impact analysis should quantify potential losses and mitigation costs",
+  ],
+};
+
+// Main analysis function
+export const analyzeProposalWithRAG = async (proposalText) => {
+  const API_KEY = import.meta.env.VITE_IBM_API_KEY;
+
+  try {
+    console.log("Getting IAM token...");
+    const iamToken = await getIAMToken(API_KEY);
+
+    // Flatten knowledge base for embeddings
+    const allPractices = Object.values(knowledgeBase).flat();
+
+    console.log("Getting embeddings...");
+    // Get embeddings using the proxy
+    const proposalEmbeddingResult = await getEmbeddings(
+      [proposalText],
+      iamToken
+    );
+    const knowledgeBaseEmbeddingResult = await getEmbeddings(
+      allPractices,
+      iamToken
+    );
+
+    // Calculate similarities
+    const proposalEmbedding = proposalEmbeddingResult.results[0].embedding;
+    const knowledgeBaseEmbeddings = knowledgeBaseEmbeddingResult.results.map(
+      (r) => r.embedding
+    );
+
+    const similarities = allPractices.map((text, index) => ({
+      text,
+      similarity: cosineSimilarity(
+        proposalEmbedding,
+        knowledgeBaseEmbeddings[index]
+      ),
+    }));
+
+    const topPractices = similarities
+      .sort((a, b) => b.similarity - a.similarity)
+      .slice(0, 5);
+
+    console.log("Generating analysis...");
+    // Generate final analysis using the proxy
+    const analysisResponse = await fetch(
+      "/api/ml/ml/v1/text/generation?version=2023-05-29", // Use proxy path
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${iamToken}`,
+        },
+        body: JSON.stringify({
+          input: `As an expert business proposal analyst, review this proposal using these best practices:
+${topPractices.map((p) => `- ${p.text}`).join("\n")}
+
+Proposal to analyze:
+${proposalText}
+
+Provide a comprehensive analysis in this format:
+
+QUANTITATIVE SCORING
+Rate each aspect from 1-10 and provide brief justification:
+- Clarity: [score] - [justification]
+- Completeness: [score] - [justification]
+- Feasibility: [score] - [justification]
+- Value Proposition: [score] - [justification]
+Overall Score: [weighted average]
+
+DETAILED ANALYSIS
+For each section below, provide specific findings and recommendations:
+
+AREA: [section name]
+CURRENT STATE: [detailed current analysis]
+GAPS: [identified gaps]
+IMPACT: [business impact of gaps]
+PRIORITY: [High/Medium/Low]
+RECOMMENDATIONS: [specific, actionable improvements]
+IMPLEMENTATION COMPLEXITY: [Easy/Medium/Hard]
+EXPECTED ROI: [Low/Medium/High with justification]
+---`,
+          model_id: "ibm/granite-3-8b-instruct",
+          project_id: import.meta.env.VITE_IBM_PROJECT_ID,
+          parameters: {
+            decoding_method: "greedy",
+            max_new_tokens: 1500,
+            min_new_tokens: 200,
+            temperature: 0.7,
+            repetition_penalty: 1.2,
+          },
+        }),
+      }
+    );
+
+    if (!analysisResponse.ok) {
+      console.error("Analysis API Error:", await analysisResponse.text());
+      throw new Error(`Analysis error: ${analysisResponse.status}`);
+    }
+
+    const analysisResult = await analysisResponse.json();
+
+    return {
+      relevantPractices: topPractices,
+      analysis: analysisResult.results[0].generated_text,
+      metadata: {
+        analysisDate: new Date().toISOString(),
+        modelVersion: "granite-3-8b-instruct",
+        knowledgeBaseCategories: Object.keys(knowledgeBase),
+      },
+    };
+  } catch (error) {
+    console.error("Error in RAG analysis:", error);
+    throw error;
+  }
+};

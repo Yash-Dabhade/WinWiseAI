@@ -49,14 +49,14 @@ const Predict = () => {
           value={text}
           onChange={(e) => setText(e.target.value)}
           className="w-full h-64 p-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-800 placeholder-gray-400"
-          placeholder="Type or paste your analysis content here..."
+          placeholder="Type or paste your predict content here..."
         />
         <button
           onClick={handleAnalyze}
           disabled={loading}
           className="mt-4 w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors disabled:bg-indigo-300"
         >
-          {loading ? "Analyzing..." : "Analyze Proposal"}
+          {loading ? "Predicting..." : "Predict Proposal"}
         </button>
 
         {error && (

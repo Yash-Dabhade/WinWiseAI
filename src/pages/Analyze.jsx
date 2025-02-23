@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { analyzeProposalWithRAG } from "../services/api"; // Import the RAG analysis function
 
 const Analyze = () => {
   const [text, setText] = useState("");
@@ -9,46 +10,14 @@ const Analyze = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Simulate analysis API call
+  // Handle analysis submission
   const handleAnalyze = async () => {
     setLoading(true);
     setError(null);
+
     try {
-      // Simulated API response - replace with actual API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Use the sample analysis data provided
-      const analysisData = {
-        relevantPractices: [
-          {
-            text: "Budget sections require detailed cost breakdowns, ROI calculations, and clear payment schedules.",
-            similarity: 0.5794524086668901,
-          },
-          {
-            text: "Project timelines must include detailed milestones, dependencies, and clear deliverables for each phase.",
-            similarity: 0.546133503108659,
-          },
-          {
-            text: "Technical specifications must be clearly defined with measurable success criteria.",
-            similarity: 0.5417457336435273,
-          },
-        ],
-        analysis: `AREA: Budget section
-CURRENT STATE: The budget section provides a total cost of $150,000 but lacks detailed cost breakdowns...
-GAPS: Lack of detail in cost allocation, absence of ROI calculation...
-RECOMMENDATIONS: Include line-item costs, provide estimated ROI...
-
-AREA: Project timeline
-CURRENT STATE: Timeline includes broad phases without detailed milestones...
-GAPS: Absence of granular task details...
-RECOMMENDATIONS: Break down into weekly tasks with dates...
-
-AREA: Technical specifications
-CURRENT STATE: No technical specifications beyond "basic features"...
-GAPS: Insufficient definition of requirements...
-RECOMMENDATIONS: Define specific functions and metrics...`,
-      };
-
+      // Call the RAG analysis function
+      const analysisData = await analyzeProposalWithRAG(text);
       setResults(analysisData);
     } catch (err) {
       setError(err.message);
