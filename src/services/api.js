@@ -1,7 +1,7 @@
 // api.js
 
 const getIAMToken = async (apiKey) => {
-  const tokenUrl = "/api/iam/identity/token"; // Proxied path
+  const tokenUrl = "https://iam.cloud.ibm.com/identity/token"; // Proxied path
   const params = new URLSearchParams();
   params.append("grant_type", "urn:ibm:params:oauth:grant-type:apikey");
   params.append("apikey", apiKey);
@@ -46,7 +46,8 @@ export const generateProposal = async ({
   timeline,
 }) => {
   const API_KEY = import.meta.env.VITE_IBM_API_KEY;
-  const url = "/api/ml/ml/v1/text/generation?version=2023-05-29"; // Proxied path
+  const url =
+    "https://us-south.ml.cloud.ibm.com/ml/v1/text/generation?version=2023-05-29"; // Proxied path
   const projectId = import.meta.env.VITE_IBM_PROJECT_ID;
 
   if (!API_KEY || !projectId) {
@@ -138,7 +139,8 @@ const formatProposalForPDF = (text) => {
 };
 
 export const getEmbeddings = async (texts, iamToken) => {
-  const url = "/api/ml/ml/v1/text/embeddings?version=2023-10-25"; // Proxied path
+  const url =
+    "https://us-south.ml.cloud.ibm.com/ml/v1/text/embeddings?version=2023-10-25"; // Proxied path
   const body = {
     inputs: texts, // texts is now an array of strings
     model_id: "ibm/granite-embedding-278m-multilingual",
@@ -300,7 +302,7 @@ export const analyzeProposalWithRAG = async (proposalText) => {
     console.log("Generating analysis...");
     // Generate final analysis using the proxy
     const analysisResponse = await fetch(
-      "/api/ml/ml/v1/text/generation?version=2023-05-29", // Use proxy path
+      "https://us-south.ml.cloud.ibm.com/ml/v1/text/generation?version=2023-05-29", // Use proxy path
       {
         method: "POST",
         headers: {
