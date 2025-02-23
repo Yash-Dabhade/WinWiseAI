@@ -9,6 +9,7 @@ const getIAMToken = async (apiKey) => {
   console.log("Fetching IAM token with:", {
     url: tokenUrl,
     method: "POST",
+    mode: "no-cors",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
       Accept: "application/json",
@@ -18,6 +19,7 @@ const getIAMToken = async (apiKey) => {
 
   const response = await fetch(tokenUrl, {
     method: "POST",
+    mode: "no-cors",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
       Accept: "application/json",
@@ -101,6 +103,7 @@ export const generateProposal = async ({
       method: "POST",
       headers,
       body: JSON.stringify(body),
+      mode: "no-cors",
     });
 
     if (!response.ok) {
@@ -154,6 +157,7 @@ export const getEmbeddings = async (texts, iamToken) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${iamToken}`,
     },
+    mode: "no-cors",
     body: JSON.stringify(body),
   });
 
@@ -179,9 +183,9 @@ export const analyzeOutcome = async (newProposal) => {
 
   try {
     // Load historical proposals from JSON file
-    const historicalData = await fetch("/data/synthetic_proposals.json").then(
-      (res) => res.json()
-    );
+    const historicalData = await fetch("/data/synthetic_proposals.json", {
+      mode: "no-cors",
+    }).then((res) => res.json());
     const iamToken = await getIAMToken(API_KEY);
 
     // Convert proposals to an array of strings
@@ -305,6 +309,7 @@ export const analyzeProposalWithRAG = async (proposalText) => {
       "https://us-south.ml.cloud.ibm.com/ml/v1/text/generation?version=2023-05-29", // Use proxy path
       {
         method: "POST",
+        mode: "no-cors",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
