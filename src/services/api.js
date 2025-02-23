@@ -136,3 +136,94 @@ const formatProposalForPDF = (text) => {
       .filter((section) => section.title && section.content),
   };
 };
+
+export const getEmbeddings = async (texts, iamToken) => {
+  const url = "/api/ml/ml/v1/text/embeddings?version=2023-10-25"; // Proxied path
+  const body = {
+    inputs: texts, // texts is now an array of strings
+    model_id: "ibm/granite-embedding-278m-multilingual",
+    project_id: import.meta.env.VITE_IBM_PROJECT_ID,
+  };
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${iamToken}`,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.text();
+    console.error("Embedding Error Response:", errorData);
+    throw new Error(`HTTP error! status: ${response.status} - ${errorData}`);
+  }
+
+  return await response.json();
+};
+
+// Compute cosine similarity between two vectors
+export const cosineSimilarity = (vecA, vecB) => {
+  const dotProduct = vecA.reduce((sum, a, i) => sum + a * vecB[i], 0);
+  const normA = Math.sqrt(vecA.reduce((sum, a) => sum + a * a, 0));
+  const normB = Math.sqrt(vecB.reduce((sum, b) => sum + b * b, 0));
+  return dotProduct / (normA * normB);
+};
+
+export const analyzeOutcome = async (newProposal) => {
+  const API_KEY = import.meta.env.VITE_IBM_API_KEY;
+
+  try {
+    // Load historical proposals from JSON file
+    const historicalData = await fetch("/data/synthetic_proposals.json").then(
+      (res) => res.json()
+    );
+    const iamToken = await getIAMToken(API_KEY);
+
+    // Convert proposals to an array of strings
+    const historicalTexts = historicalData.map(
+      (p) =>
+        `Executive Summary: ${p.executive_summary}\nProject Scope: ${p.project_scope}\nTechnical Details: ${p.technical_details}`
+    );
+
+    // Convert the new proposal to a string
+    const newProposalText = `Executive Summary: ${newProposal.executive_summary}\nProject Scope: ${newProposal.project_scope}\nTechnical Details: ${newProposal.technical_details}`;
+
+    // Get embeddings for historical proposals and new proposal
+    const historicalEmbeddings = await getEmbeddings(historicalTexts, iamToken);
+    const newProposalEmbedding = await getEmbeddings(
+      [newProposalText],
+      iamToken
+    );
+
+    // Calculate similarity between new proposal and each historical proposal
+    const similarities = historicalData.map((proposal, index) => ({
+      similarity: cosineSimilarity(
+        newProposalEmbedding.results[0].embedding,
+        historicalEmbeddings.results[index].embedding
+      ),
+      proposal: proposal,
+    }));
+
+    // Sort proposals by similarity (highest first) and select the top three
+    similarities.sort((a, b) => b.similarity - a.similarity);
+    const topSimilar = similarities.slice(0, 3);
+
+    // Count how many of the top proposals have outcome "win"
+    const winCount = topSimilar.filter(
+      (s) => s.proposal.metadata && s.proposal.metadata.outcome === "win"
+    ).length;
+    // Use Laplace smoothing: (winCount + 1) / (total + 2) ensures a probability > 0
+    const winProbability = (winCount + 1) / (topSimilar.length + 2);
+
+    return {
+      outcome: winProbability >= 0.5 ? "win" : "loss",
+      probability: winProbability,
+    };
+  } catch (error) {
+    console.error("Error in outcome analysis:", error);
+    throw error;
+  }
+};

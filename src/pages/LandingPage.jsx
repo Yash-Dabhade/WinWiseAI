@@ -58,7 +58,7 @@ const LandingPage = () => {
             </motion.p>
             <motion.div variants={itemVariants}>
               <Link
-                to="/generate"
+                to="/dashboard/generate"
                 className="inline-flex items-center bg-yellow-400 text-indigo-900 px-8 py-4 rounded-full text-lg font-semibold hover:bg-yellow-300 transition-all duration-300 shadow-lg"
               >
                 Try It Now <ChevronRight className="ml-2 w-5 h-5" />

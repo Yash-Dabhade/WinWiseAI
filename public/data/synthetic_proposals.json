@@ -1,0 +1,26 @@
+[
+  {
+    "executive_summary": "Implementation of an AI-powered CRM system to improve sales efficiency.",
+    "project_scope": "Develop a cloud-based CRM system with AI capabilities for sales prediction and customer segmentation.",
+    "technical_details": "Use Python for backend, React for frontend, and integrate TensorFlow for AI models.",
+    "metadata": {
+      "outcome": "win"
+    }
+  },
+  {
+    "executive_summary": "Upgrade legacy systems to a modern ERP solution for better resource management.",
+    "project_scope": "Migrate from legacy systems to a cloud-based ERP solution with real-time analytics.",
+    "technical_details": "Use Java for backend, Angular for frontend, and integrate AWS for cloud hosting.",
+    "metadata": {
+      "outcome": "loss"
+    }
+  },
+  {
+    "executive_summary": "Develop a mobile app for remote workforce management.",
+    "project_scope": "Build a cross-platform mobile app for tracking employee productivity and task management.",
+    "technical_details": "Use Flutter for cross-platform development and Firebase for backend services.",
+    "metadata": {
+      "outcome": "win"
+    }
+  }
+]

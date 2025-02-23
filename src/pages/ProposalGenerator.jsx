@@ -43,40 +43,31 @@ const ProposalGenerator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-cyan-400 py-12 px-4 sm:px-6 lg:px-8">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-7xl mx-auto "
-      >
-        <div className="flex items-center justify-center space-x-2 mb-8">
-          <img src="/crown.png" alt="WinWise AI Logo" className="w-12 h-12" />
-          <h1 className="text-4xl font-bold text-center text-orange-400">
-            WinWise AI Generator
-          </h1>
-        </div>
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="w-full max-w-7xl mx-auto"
+    >
+      <div className="bg-white text-gray-800 rounded-xl p-8 shadow-2xl max-w-3xl mx-auto">
+        <h2 className="text-3xl font-bold text-center mb-6 text-indigo-900">
+          Generate Your Proposal
+        </h2>
+        <ProposalForm onSubmit={handleSubmit} isLoading={isLoading} />
+      </div>
 
-        <div className="text-white rounded-xl p-8 shadow-2xl max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-6 text-indigo-900">
-            Generate Your Proposal
-          </h2>
-          <ProposalForm onSubmit={handleSubmit} isLoading={isLoading} />
-        </div>
-
-        {proposal && (
-          <motion.div
-            ref={proposalRef}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mt-12 max-w-4xl mx-auto"
-          >
-            <GeneratedProposal proposal={proposal} />
-          </motion.div>
-        )}
-      </motion.div>
-    </div>
+      {proposal && (
+        <motion.div
+          ref={proposalRef}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mt-12 max-w-4xl mx-auto"
+        >
+          <GeneratedProposal proposal={proposal} />
+        </motion.div>
+      )}
+    </motion.div>
   );
 };
 
