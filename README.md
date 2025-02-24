@@ -4,7 +4,7 @@
 
 WinWise AI is an innovative application designed to streamline proposal creation, management, and optimization for sales teams. By leveraging advanced AI technologies, it tackles common challenges such as time-consuming processes and ineffective proposals, empowering sales professionals to work smarter and win more deals.
 
-![WinWise AI Logo](https://freeimage.host/i/3HkBBSa) 
+
 
 ## Key Features
 
