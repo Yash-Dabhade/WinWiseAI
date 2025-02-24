@@ -5,9 +5,7 @@ import { useState } from "react";
 import { analyzeOutcome } from "../services/api"; // Import the analyzeOutcome function
 
 const Predict = () => {
-  const [text, setText] = useState(
-    "Enter your prosposal content here... max (512 chars)"
-  );
+  const [text, setText] = useState();
   const [analysisResult, setAnalysisResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -49,7 +47,7 @@ const Predict = () => {
           value={text}
           onChange={(e) => setText(e.target.value)}
           className="w-full h-64 p-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-800 placeholder-gray-400"
-          placeholder="Type or paste your predict content here..."
+          placeholder="Enter your prosposal content here... max (512 chars)"
         />
         <button
           onClick={handleAnalyze}
